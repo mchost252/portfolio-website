@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   creator: "Njoku Obinna",
   publisher: "Njoku Obinna",
   icons: {
-    icon: '/favicon.png',
+    icon: '/public/favicon.png',
   },
   manifest: '/manifest.json',
 };
