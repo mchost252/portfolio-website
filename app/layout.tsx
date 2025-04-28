@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   creator: "Njoku Obinna",
   publisher: "Njoku Obinna",
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.png',
   },
   manifest: '/manifest.json',
 };
@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" type="image/png" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
