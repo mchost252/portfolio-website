@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   authors: [{ name: "Njoku Obinna" }],
   creator: "Njoku Obinna",
   publisher: "Njoku Obinna",
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
