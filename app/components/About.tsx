@@ -11,12 +11,12 @@ const About = () => {
   });
 
   const skills = [
-    { name: 'UI/UX Design', level: 95 },
-    { name: 'Web Development', level: 90 },
-    { name: 'Graphic Design', level: 85 },
-    { name: 'Video Editing', level: 80 },
-    { name: 'Branding', level: 85 },
-    { name: 'Photo Editing', level: 75 },
+    { name: 'UI/UX Design', level: 65 },
+    { name: 'Web Development', level: 80 },
+    { name: 'Graphic Design', level: 90 },
+    { name: 'Video Editing', level: 82 },
+    { name: 'Branding', level: 86 },
+    { name: 'Photo Editing', level: 76 },
   ];
 
   const containerVariants = {
@@ -36,6 +36,18 @@ const About = () => {
       opacity: 1,
       transition: { duration: 0.6 },
     },
+  };
+
+  const skillBarVariants = {
+    hidden: { width: 0 },
+    visible: (level: number) => ({
+      width: `${level}%`,
+      transition: {
+        duration: 1.5,
+        ease: "easeOut",
+        delay: 0.3
+      }
+    })
   };
 
   return (
@@ -103,10 +115,11 @@ const About = () => {
                     </div>
                     <div className="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
                       <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${skill.level}%` }}
-                        transition={{ duration: 1, delay: 0.3 }}
-                        className="bg-indigo-500 h-full rounded-full"
+                        custom={skill.level}
+                        variants={skillBarVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600"
                       ></motion.div>
                     </div>
                   </div>
