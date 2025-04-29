@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import Image from 'next/image';
@@ -12,6 +12,48 @@ const Portfolio = () => {
   });
 
   const [filter, setFilter] = useState('all');
+  const [activeItem, setActiveItem] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [itemInView, setItemInView] = useState<boolean[]>(Array(6).fill(false));
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = itemRefs.current.indexOf(entry.target as HTMLDivElement);
+          if (index !== -1) {
+            setItemInView((prev) => {
+              const newState = [...prev];
+              newState[index] = entry.isIntersecting;
+              return newState;
+            });
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    itemRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => {
+      itemRefs.current.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, []);
+
+  // Check if device is mobile on component mount
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   const portfolioItems = [
     {
@@ -133,7 +175,7 @@ const Portfolio = () => {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           <AnimatePresence mode="wait">
-            {filteredItems.map((item) => (
+            {filteredItems.map((item, index) => (
               <motion.div
                 layout
                 key={item.id}
@@ -142,6 +184,20 @@ const Portfolio = () => {
                 animate="visible"
                 exit={{ opacity: 0, y: 20 }}
                 className="group relative overflow-hidden rounded-lg bg-gray-900"
+                onMouseEnter={() => {
+                  setActiveItem(item.id);
+                  // Reset other items' hover state
+                  setItemInView(prev => prev.map((_, i) => i === index));
+                }}
+                onMouseLeave={() => {
+                  setActiveItem(null);
+                  // Reset all items' hover state
+                  setItemInView(prev => prev.map(() => false));
+                }}
+                onClick={() => setActiveItem(activeItem === item.id ? null : item.id)}
+                ref={(el: HTMLDivElement | null) => {
+                  itemRefs.current[index] = el;
+                }}
               >
                 <div className="relative overflow-hidden" style={{ height: "320px" }}>
                   <div className="absolute inset-0 bg-black/30 z-10"></div>
@@ -152,7 +208,11 @@ const Portfolio = () => {
                     height={500}
                     className="object-cover w-full h-full transform group-hover:scale-110 transition-transform duration-500 relative z-0"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 z-20">
+                  <div 
+                    className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent 
+                      transition-opacity duration-300 flex flex-col justify-end p-6 z-20
+                      ${(isMobile && itemInView[index]) || activeItem === item.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                  >
                     <h4 className="text-xl font-bold text-white mb-2">{item.title}</h4>
                     <div className="flex flex-wrap gap-2">
                       {item.tags.map((tag, index) => (
