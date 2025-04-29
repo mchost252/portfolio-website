@@ -19,6 +19,7 @@ const Contact = () => {
     submitted: false,
     success: false,
     message: '',
+    isSending: false,
   });
   
   const [formData, setFormData] = useState({
@@ -53,11 +54,12 @@ const Contact = () => {
         submitted: true,
         success: false,
         message: 'Sending message...',
+        isSending: true,
       });
       
       // Create a FormData object to ensure all fields are included
       const formDataToSend = new FormData(formRef.current!);
-      formDataToSend.append('service', formData.service); // Explicitly add the service field
+      formDataToSend.append('service', formData.service);
       
       await emailjs.sendForm(
         process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
@@ -70,6 +72,7 @@ const Contact = () => {
         submitted: true,
         success: true,
         message: 'Message sent successfully! I will get back to you soon.',
+        isSending: false,
       });
       
       // Reset form
@@ -86,6 +89,7 @@ const Contact = () => {
         submitted: true,
         success: false,
         message: 'Failed to send message. Please try again later.',
+        isSending: false,
       });
     }
   };
@@ -261,15 +265,15 @@ const Contact = () => {
               <div>
                 <button
                   type="submit"
-                  disabled={!isFormValid}
+                  disabled={!isFormValid || formStatus.isSending}
                   className={`px-8 py-3 font-medium rounded-lg transition-colors duration-300 flex items-center gap-2 ${
-                    isFormValid 
+                    isFormValid && !formStatus.isSending
                       ? 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer' 
                       : 'bg-gray-700 text-gray-400 cursor-not-allowed'
                   }`}
                 >
                   <FaPaperPlane />
-                  Send Message
+                  {formStatus.isSending ? 'Sending...' : 'Send Message'}
                 </button>
               </div>
             </form>
