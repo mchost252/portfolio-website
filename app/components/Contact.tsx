@@ -4,7 +4,10 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import emailjs from '@emailjs/browser';
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaLinkedin, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaLinkedin, FaInstagram, FaWhatsapp, FaPaperPlane } from 'react-icons/fa';
+
+// Initialize EmailJS with your public key
+emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '');
 
 const Contact = () => {
   const [ref, inView] = useInView({
@@ -52,12 +55,11 @@ const Contact = () => {
         message: 'Sending message...',
       });
       
-      // Replace these with your actual EmailJS service, template, and user IDs
       await emailjs.sendForm(
-        'YOUR_SERVICE_ID',
-        'YOUR_TEMPLATE_ID',
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
         formRef.current!,
-        'YOUR_USER_ID'
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ''
       );
       
       setFormStatus({
@@ -207,15 +209,19 @@ const Contact = () => {
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-gray-300 mb-2">Your Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 pl-10"
+                      placeholder="Enter your email address"
+                    />
+                    <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  </div>
                 </div>
               </div>
               <div>
@@ -245,18 +251,20 @@ const Contact = () => {
                   required
                   rows={6}
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Tell me about your project..."
                 ></textarea>
               </div>
               <div>
                 <button
                   type="submit"
                   disabled={!isFormValid}
-                  className={`px-8 py-3 font-medium rounded-lg transition-colors duration-300 ${
+                  className={`px-8 py-3 font-medium rounded-lg transition-colors duration-300 flex items-center gap-2 ${
                     isFormValid 
                       ? 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer' 
                       : 'bg-gray-700 text-gray-400 cursor-not-allowed'
                   }`}
                 >
+                  <FaPaperPlane />
                   Send Message
                 </button>
               </div>
