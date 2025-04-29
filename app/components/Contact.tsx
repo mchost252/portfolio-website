@@ -24,7 +24,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    subject: '',
+    service: '',
     message: '',
   });
 
@@ -34,8 +34,8 @@ const Contact = () => {
   
   useEffect(() => {
     // Check if all form fields are filled
-    const { name, email, subject, message } = formData;
-    setIsFormValid(name.trim() !== '' && email.trim() !== '' && subject.trim() !== '' && message.trim() !== '');
+    const { name, email, service, message } = formData;
+    setIsFormValid(name.trim() !== '' && email.trim() !== '' && service.trim() !== '' && message.trim() !== '');
   }, [formData]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -55,6 +55,10 @@ const Contact = () => {
         message: 'Sending message...',
       });
       
+      // Create a FormData object to ensure all fields are included
+      const formDataToSend = new FormData(formRef.current!);
+      formDataToSend.append('service', formData.service); // Explicitly add the service field
+      
       await emailjs.sendForm(
         process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
         process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
@@ -72,7 +76,7 @@ const Contact = () => {
       setFormData({
         name: '',
         email: '',
-        subject: '',
+        service: '',
         message: '',
       });
       
@@ -86,7 +90,7 @@ const Contact = () => {
     }
   };
 
-  const subjectOptions = [
+  const serviceOptions = [
     { value: '', label: 'Select a Service' },
     { value: 'Web Design', label: 'Web Design' },
     { value: 'Graphic Design', label: 'Graphic Design' },
@@ -225,16 +229,16 @@ const Contact = () => {
                 </div>
               </div>
               <div>
-                <label htmlFor="subject" className="block text-gray-300 mb-2">Service Needed</label>
+                <label htmlFor="service" className="block text-gray-300 mb-2">Service Needed</label>
                 <select
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
+                  id="service"
+                  name="service"
+                  value={formData.service}
                   onChange={handleChange}
                   required
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
                 >
-                  {subjectOptions.map((option) => (
+                  {serviceOptions.map((option) => (
                     <option key={option.value} value={option.value} disabled={option.value === ''}>
                       {option.label}
                     </option>
