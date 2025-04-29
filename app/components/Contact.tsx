@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import emailjs from '@emailjs/browser';
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaLinkedin, FaInstagram, FaWhatsapp, FaPaperPlane } from 'react-icons/fa';
+import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaLinkedin, FaInstagram, FaWhatsapp, FaPaperPlane, FaCheckCircle } from 'react-icons/fa';
 
 // Initialize EmailJS with your public key
 emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '');
@@ -57,7 +57,6 @@ const Contact = () => {
         isSending: true,
       });
       
-      // Create a FormData object to ensure all fields are included
       const formDataToSend = new FormData(formRef.current!);
       formDataToSend.append('service', formData.service);
       
@@ -92,6 +91,15 @@ const Contact = () => {
         isSending: false,
       });
     }
+  };
+
+  const handleNewEnquiry = () => {
+    setFormStatus({
+      submitted: false,
+      success: false,
+      message: '',
+      isSending: false,
+    });
   };
 
   const serviceOptions = [
@@ -193,90 +201,152 @@ const Contact = () => {
             variants={itemVariants}
             className="lg:col-span-2 bg-gray-900 rounded-xl p-8 border border-gray-800"
           >
-            <h4 className="text-2xl font-bold text-white mb-6">Send a Message</h4>
-            
-            {formStatus.submitted && (
-              <div className={`p-4 mb-6 rounded-lg ${formStatus.success ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                {formStatus.message}
-              </div>
-            )}
-            
-            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="name" className="block text-gray-300 mb-2">Your Name</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-gray-300 mb-2">Your Email</label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 pl-10"
-                      placeholder="Enter your email address"
-                    />
-                    <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label htmlFor="service" className="block text-gray-300 mb-2">Service Needed</label>
-                <select
-                  id="service"
-                  name="service"
-                  value={formData.service}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
+            <AnimatePresence mode="wait">
+              {!formStatus.submitted ? (
+                <motion.div
+                  key="form"
+                  initial={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  {serviceOptions.map((option) => (
-                    <option key={option.value} value={option.value} disabled={option.value === ''}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="message" className="block text-gray-300 mb-2">Your Message</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  rows={6}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Tell me about your project..."
-                ></textarea>
-              </div>
-              <div>
-                <button
-                  type="submit"
-                  disabled={!isFormValid || formStatus.isSending}
-                  className={`px-8 py-3 font-medium rounded-lg transition-colors duration-300 flex items-center gap-2 ${
-                    isFormValid && !formStatus.isSending
-                      ? 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer' 
-                      : 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                  }`}
+                  <h4 className="text-2xl font-bold text-white mb-6">Send a Message</h4>
+                  
+                  {formStatus.submitted && (
+                    <div className={`p-4 mb-6 rounded-lg ${formStatus.success ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                      {formStatus.message}
+                    </div>
+                  )}
+                  
+                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="name" className="block text-gray-300 mb-2">Your Name</label>
+                        <input
+                          type="text"
+                          id="name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="email" className="block text-gray-300 mb-2">Your Email</label>
+                        <div className="relative">
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 pl-10"
+                            placeholder="Enter your email address"
+                          />
+                          <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="service" className="block text-gray-300 mb-2">Service Needed</label>
+                      <select
+                        id="service"
+                        name="service"
+                        value={formData.service}
+                        onChange={handleChange}
+                        required
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
+                      >
+                        {serviceOptions.map((option) => (
+                          <option key={option.value} value={option.value} disabled={option.value === ''}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="message" className="block text-gray-300 mb-2">Your Message</label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        required
+                        rows={6}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="Tell me about your project..."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <button
+                        type="submit"
+                        disabled={!isFormValid || formStatus.isSending}
+                        className={`px-8 py-3 font-medium rounded-lg transition-colors duration-300 flex items-center gap-2 ${
+                          isFormValid && !formStatus.isSending
+                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer' 
+                            : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                        }`}
+                      >
+                        <FaPaperPlane />
+                        {formStatus.isSending ? 'Sending...' : 'Send Message'}
+                      </button>
+                    </div>
+                  </form>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-center py-12"
                 >
-                  <FaPaperPlane />
-                  {formStatus.isSending ? 'Sending...' : 'Send Message'}
-                </button>
-              </div>
-            </form>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ 
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 20,
+                      delay: 0.2
+                    }}
+                    className="mb-6"
+                  >
+                    <FaCheckCircle className="text-green-500 text-6xl mx-auto" />
+                  </motion.div>
+                  
+                  <motion.h3
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-2xl font-bold text-white mb-4"
+                  >
+                    Enquiry Received!
+                  </motion.h3>
+                  
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="text-gray-300 mb-8"
+                  >
+                    Thank you for reaching out! I&apos;ve received your message and will get back to you as soon as possible.
+                  </motion.p>
+                  
+                  <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    onClick={handleNewEnquiry}
+                    className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-300 flex items-center gap-2 mx-auto"
+                  >
+                    <FaPaperPlane />
+                    Send Another Enquiry
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
           
           <motion.div variants={itemVariants} className="space-y-8">
